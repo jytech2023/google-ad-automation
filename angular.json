@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "google-ad-trading": {
+    "google-ad-automation": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -39,7 +39,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/google-ad-trading",
+            "outputPath": "dist/google-ad-automation",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -86,10 +86,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "google-ad-trading:build:production"
+              "buildTarget": "google-ad-automation:build:production"
             },
             "development": {
-              "buildTarget": "google-ad-trading:build:development"
+              "buildTarget": "google-ad-automation:build:development"
             }
           },
           "defaultConfiguration": "development"

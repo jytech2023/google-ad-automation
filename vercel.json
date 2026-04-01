@@ -2,7 +2,7 @@
   "version": 2,
   "framework": "angular",
   "buildCommand": "ng build --configuration production",
-  "outputDirectory": "dist/google-ad-trading/browser",
+  "outputDirectory": "dist/google-ad-automation/browser",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
