@@ -6,8 +6,7 @@ import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { I18nService } from '../../i18n/i18n.service';
 import { TranslatePipe } from '../../i18n/translate.pipe';
-
-declare function gtag(...args: unknown[]): void;
+import { GtagService } from '../../services/gtag.service';
 
 @Component({
   selector: 'app-home',
@@ -20,6 +19,7 @@ export class HomeComponent implements OnInit {
   i18n = inject(I18nService);
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
+  private gtag = inject(GtagService);
 
   contactForm = { name: '', email: '', company: '', message: '' };
   formStatus: 'idle' | 'sending' | 'success' | 'error' = 'idle';
@@ -38,14 +38,7 @@ export class HomeComponent implements OnInit {
       next: () => {
         this.formStatus = 'success';
         this.contactForm = { name: '', email: '', company: '', message: '' };
-        // Fire Google Ads conversion
-        if (typeof gtag !== 'undefined') {
-          gtag('event', 'conversion', {
-            send_to: 'AW-XXXXXXXXX/CONVERSION_LABEL',
-            value: 1.0,
-            currency: 'USD',
-          });
-        }
+        this.gtag.trackConversion();
       },
       error: () => {
         this.formStatus = 'error';
