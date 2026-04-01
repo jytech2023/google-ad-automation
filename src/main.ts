@@ -4,9 +4,13 @@ import { injectSpeedInsights } from '@vercel/speed-insights';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 import { GtagService } from './app/services/gtag.service';
+import { environment } from './environments/environment';
 
 // Initialize Vercel Analytics & Speed Insights
-injectAnalytics();
+injectAnalytics({
+  mode: environment.production ? 'production' : 'development',
+  debug: !environment.production,
+});
 injectSpeedInsights();
 
 bootstrapApplication(AppComponent, appConfig)
