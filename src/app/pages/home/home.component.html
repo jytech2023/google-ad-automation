@@ -1,0 +1,168 @@
+<app-header />
+
+<!-- Hero Section -->
+<section class="hero" id="hero">
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <span class="hero-badge">{{ 'hero.badge' | translate }}</span>
+      <h1>
+        {{ 'hero.title' | translate }}
+        <span class="highlight">{{ 'hero.titleHighlight' | translate }}</span>
+      </h1>
+      <p class="hero-subtitle">{{ 'hero.subtitle' | translate }}</p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-accent">{{ 'hero.cta' | translate }}</a>
+        <a href="#services" class="btn btn-outline">{{ 'hero.ctaSecondary' | translate }}</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">80+</span>
+          <span class="stat-label">{{ 'hero.stat1' | translate }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">10K+</span>
+          <span class="stat-label">{{ 'hero.stat2' | translate }}</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">98%</span>
+          <span class="stat-label">{{ 'hero.stat3' | translate }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="globe-placeholder">
+        <div class="globe-ring"></div>
+        <div class="globe-ring ring-2"></div>
+        <div class="globe-center">
+          <span>&#127758;</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Services Section -->
+<section class="services section" id="services">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">{{ 'services.title' | translate }}</h2>
+      <p class="section-subtitle">{{ 'services.subtitle' | translate }}</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">&#128674;</div>
+        <h3>{{ 'services.import.title' | translate }}</h3>
+        <p>{{ 'services.import.desc' | translate }}</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#127760;</div>
+        <h3>{{ 'services.sourcing.title' | translate }}</h3>
+        <p>{{ 'services.sourcing.desc' | translate }}</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128666;</div>
+        <h3>{{ 'services.logistics.title' | translate }}</h3>
+        <p>{{ 'services.logistics.desc' | translate }}</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128218;</div>
+        <h3>{{ 'services.consulting.title' | translate }}</h3>
+        <p>{{ 'services.consulting.desc' | translate }}</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128176;</div>
+        <h3>{{ 'services.finance.title' | translate }}</h3>
+        <p>{{ 'services.finance.desc' | translate }}</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">&#128187;</div>
+        <h3>{{ 'services.digital.title' | translate }}</h3>
+        <p>{{ 'services.digital.desc' | translate }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section class="about section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-content">
+        <h2 class="section-title">{{ 'about.title' | translate }}</h2>
+        <p class="section-subtitle">{{ 'about.subtitle' | translate }}</p>
+        <p class="about-text">{{ 'about.desc1' | translate }}</p>
+        <p class="about-text">{{ 'about.desc2' | translate }}</p>
+      </div>
+      <div class="about-stats">
+        <div class="about-stat-card">
+          <span class="about-stat-value">15+</span>
+          <span class="about-stat-label">{{ 'about.years' | translate }}</span>
+        </div>
+        <div class="about-stat-card">
+          <span class="about-stat-value">2,000+</span>
+          <span class="about-stat-label">{{ 'about.partners' | translate }}</span>
+        </div>
+        <div class="about-stat-card">
+          <span class="about-stat-value">$5B+</span>
+          <span class="about-stat-label">{{ 'about.volume' | translate }}</span>
+        </div>
+        <div class="about-stat-card">
+          <span class="about-stat-value">{{ 'about.supportValue' | translate }}</span>
+          <span class="about-stat-label">{{ 'about.support' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact section" id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-form-wrapper">
+        <h2 class="section-title">{{ 'contact.title' | translate }}</h2>
+        <p class="section-subtitle">{{ 'contact.subtitle' | translate }}</p>
+        <form class="contact-form" (ngSubmit)="submitContact()">
+          <input type="text" [(ngModel)]="contactForm.name" name="name"
+            [placeholder]="i18n.t('contact.name')" required />
+          <input type="email" [(ngModel)]="contactForm.email" name="email"
+            [placeholder]="i18n.t('contact.email')" required />
+          <input type="text" [(ngModel)]="contactForm.company" name="company"
+            [placeholder]="i18n.t('contact.company')" />
+          <textarea [(ngModel)]="contactForm.message" name="message"
+            [placeholder]="i18n.t('contact.message')" rows="5" required></textarea>
+          <button type="submit" class="btn btn-primary" [disabled]="formStatus === 'sending'">
+            {{ (formStatus === 'sending' ? 'contact.sending' : 'contact.submit') | translate }}
+          </button>
+          @if (formStatus === 'success') {
+            <p class="form-msg success">{{ 'contact.success' | translate }}</p>
+          }
+          @if (formStatus === 'error') {
+            <p class="form-msg error">{{ 'contact.error' | translate }}</p>
+          }
+        </form>
+      </div>
+      <div class="contact-info">
+        <h3>{{ 'contact.info.title' | translate }}</h3>
+        <div class="info-item">
+          <span class="info-icon">&#9993;</span>
+          <span>{{ 'contact.info.email' | translate }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">&#9742;</span>
+          <span>{{ 'contact.info.phone' | translate }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">&#128205;</span>
+          <span class="info-address">{{ 'contact.info.address' | translate }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-icon">&#128339;</span>
+          <span>{{ 'contact.info.hours' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-footer />
