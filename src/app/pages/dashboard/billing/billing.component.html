@@ -1,0 +1,107 @@
+<h2 class="page-title">{{ 'dash.billing' | translate }}</h2>
+
+@if (loading()) {
+  <div class="loading-bar"></div>
+}
+
+@if (summary(); as s) {
+  <!-- Cost Summary KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card highlight">
+      <div class="kpi-header">
+        <span class="kpi-label">{{ 'dash.totalCost' | translate }}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      </div>
+      <span class="kpi-value">{{ s.totalCost | currency:'USD':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">{{ 'dash.avgCpc' | translate }}</span>
+      </div>
+      <span class="kpi-value">{{ s.avgCpc | currency:'USD':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">{{ 'dash.costPerConv' | translate }}</span>
+      </div>
+      <span class="kpi-value">{{ s.avgCostPerConversion | currency:'USD':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">{{ 'dash.totalClicks' | translate }}</span>
+      </div>
+      <span class="kpi-value">{{ s.totalClicks | number }}</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">{{ 'dash.totalConversions' | translate }}</span>
+      </div>
+      <span class="kpi-value">{{ s.totalConversions | number }}</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="kpi-label">{{ 'dash.totalImpressions' | translate }}</span>
+      </div>
+      <span class="kpi-value">{{ s.totalImpressions | number }}</span>
+    </div>
+  </div>
+
+  <!-- Daily Cost Chart -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3>{{ 'dash.dailyCost' | translate }}</h3>
+    </div>
+    <div class="bar-chart cost-chart">
+      @for (d of dailyCost(); track d.date) {
+        <div class="bar-col">
+          <div class="bar" [style.height]="costBarHeight(d.cost)">
+            <span class="bar-tooltip">{{ d.cost | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+          <span class="bar-label">{{ d.date.length > 5 ? d.date.slice(5) : d.date }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Cost by Campaign Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h3>{{ 'dash.costByCampaign' | translate }}</h3>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'dash.campaign' | translate }}</th>
+            <th>{{ 'dash.status' | translate }}</th>
+            <th>{{ 'dash.cost' | translate }}</th>
+            <th>%</th>
+            <th>{{ 'dash.clicks' | translate }}</th>
+            <th>{{ 'dash.cpc' | translate }}</th>
+            <th>{{ 'dash.conv' | translate }}</th>
+            <th>{{ 'dash.costPerConvShort' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of byCampaign(); track c.name) {
+            <tr>
+              <td class="campaign-name">{{ c.name }}</td>
+              <td><span class="status-badge" [attr.data-status]="c.status">{{ c.status }}</span></td>
+              <td class="cost-value">{{ c.cost | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td>
+                <div class="cost-bar-cell">
+                  <div class="cost-bar-fill" [style.width.%]="costPercentage(c.cost)"></div>
+                  <span>{{ costPercentage(c.cost) }}%</span>
+                </div>
+              </td>
+              <td>{{ c.clicks | number }}</td>
+              <td>{{ c.cpc | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td>{{ c.conversions | number }}</td>
+              <td>{{ c.costPerConv | currency:'USD':'symbol':'1.2-2' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

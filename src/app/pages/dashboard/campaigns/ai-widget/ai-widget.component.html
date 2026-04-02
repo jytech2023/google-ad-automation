@@ -1,0 +1,237 @@
+<div class="ai-widget">
+  <!-- Header -->
+  <div class="ai-header">
+    <div class="ai-header-left">
+      <div class="ai-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+      </div>
+      <div>
+        <h3>AI Campaign Builder</h3>
+        <p class="ai-subtitle">Create optimized Google Ads campaigns in seconds</p>
+      </div>
+    </div>
+    <span class="ai-badge">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12"><circle cx="8" cy="8" r="3"/></svg>
+      Gemini AI
+    </span>
+  </div>
+
+  <!-- Step Indicator -->
+  <div class="ai-steps">
+    <div class="ai-step" [class.active]="!aiPlan()" [class.done]="!!aiPlan()">
+      <span class="step-num">{{ aiPlan() ? '&#10003;' : '1' }}</span>
+      <span>Describe</span>
+    </div>
+    <div class="step-line" [class.done]="!!aiPlan()"></div>
+    <div class="ai-step" [class.active]="!!aiPlan() && !allCreated()" [class.done]="allCreated()">
+      <span class="step-num">{{ allCreated() ? '&#10003;' : '2' }}</span>
+      <span>Review</span>
+    </div>
+    <div class="step-line" [class.done]="allCreated()"></div>
+    <div class="ai-step" [class.active]="allCreated()">
+      <span class="step-num">3</span>
+      <span>Launch</span>
+    </div>
+  </div>
+
+  <!-- Prompt Input -->
+  @if (!aiPlan()) {
+    <div class="ai-prompt-section">
+      <label class="prompt-label">What would you like to advertise?</label>
+      <div class="prompt-box">
+        <textarea
+          [value]="aiPrompt()"
+          (input)="aiPrompt.set($any($event.target).value)"
+          placeholder="Describe your business, target audience, goals, and budget..."
+          rows="4"
+        ></textarea>
+        <button class="generate-btn" (click)="generateAiPlan()" [disabled]="aiLoading() || !aiPrompt()">
+          @if (aiLoading()) {
+            <span class="btn-spinner"></span>
+            Generating...
+          } @else {
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path d="M10 1l2.39 5.64L18 7.64l-4.5 4.09L14.78 18 10 14.77 5.22 18l1.28-6.27L2 7.64l5.61-1L10 1z"/></svg>
+            Generate Plan
+          }
+        </button>
+      </div>
+
+      <!-- Example Prompts -->
+      <div class="prompt-examples">
+        <span class="examples-label">Try:</span>
+        <button class="example-chip url-chip" (click)="useExample('https://google-ad-automation.jytech.us/')">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="12" height="12"><path d="M6.5 11.5L3 8l3.5-3.5"/><path d="M9.5 4.5L13 8l-3.5 3.5"/></svg>
+          From URL
+        </button>
+        <button class="example-chip" (click)="useExample('Online clothing store targeting women 25-40 in the US, $30/day budget')">Fashion e-commerce</button>
+        <button class="example-chip" (click)="useExample('B2B SaaS product for project management, targeting small businesses, $50/day')">SaaS product</button>
+        <button class="example-chip" (click)="useExample('Local restaurant in San Francisco, want more delivery orders, $20/day budget')">Local business</button>
+      </div>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (aiLoading()) {
+    <div class="ai-loading">
+      <div class="loading-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <p class="loading-text">AI is crafting your campaign strategy...</p>
+      <div class="loading-steps">
+        <span class="loading-step done">Crawling website</span>
+        <span class="loading-step active">Analyzing content</span>
+        <span class="loading-step">Selecting keywords</span>
+        <span class="loading-step">Writing ad copy</span>
+      </div>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (aiError()) {
+    <div class="ai-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      {{ aiError() }}
+    </div>
+  }
+
+  <!-- Results -->
+  @if (aiPlan(); as plan) {
+    <div class="ai-results">
+
+      <!-- Crawled Site Info -->
+      @if (crawledSite(); as site) {
+        <div class="crawled-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>Generated from <strong>{{ site.siteName || site.title }}</strong></span>
+          <a class="crawled-url" [href]="site.url" target="_blank">{{ site.url }}</a>
+        </div>
+      }
+
+      <!-- Campaigns -->
+      <div class="result-section">
+        <div class="section-bar">
+          <div class="section-title-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <h4>Campaigns ({{ plan.campaigns.length }})</h4>
+          </div>
+          <button class="create-all-btn" (click)="createAllAiCampaigns()" [disabled]="aiCreating() !== null || allCreated()">
+            {{ allCreated() ? 'All Created' : 'Create All' }}
+          </button>
+        </div>
+        @for (c of plan.campaigns; track c.name; let i = $index) {
+          <div class="campaign-row" [class.created]="aiCreated().has(i)">
+            <div class="campaign-row-left">
+              <div class="campaign-status-icon">
+                @if (aiCreated().has(i)) {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/></svg>
+                }
+              </div>
+              <div class="campaign-row-info">
+                <div class="campaign-row-name">
+                  <span>{{ c.name }}</span>
+                  <span class="tag channel">{{ c.channel }}</span>
+                  <span class="tag budget">{{ c.dailyBudget | currency:'USD':'symbol':'1.0-0' }}/day</span>
+                </div>
+                <p class="campaign-row-desc">{{ c.rationale }}</p>
+              </div>
+            </div>
+            <div class="campaign-row-action">
+              @if (aiCreated().has(i)) {
+                <span class="status-created">Created</span>
+              } @else if (aiCreating() === i) {
+                <span class="btn-spinner small"></span>
+              } @else {
+                <button class="create-btn" (click)="createAiCampaign(i)" [disabled]="aiCreating() !== null">Create</button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Keywords + Ad Copy in 2-col -->
+      <div class="result-grid">
+        <!-- Keywords -->
+        <div class="result-section">
+          <div class="section-title-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <h4>Keywords</h4>
+          </div>
+          <div class="keyword-cloud">
+            @for (kw of plan.keywords; track kw) {
+              <span class="kw-chip">{{ kw }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- Target Audience -->
+        <div class="result-section">
+          <div class="section-title-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h4>Target Audience</h4>
+          </div>
+          <p class="audience-text">{{ plan.targetAudience }}</p>
+          <div class="budget-pill">
+            <span class="budget-label">Est. Monthly Budget</span>
+            <span class="budget-amount">{{ plan.estimatedMonthlyBudget | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ad Copy -->
+      <div class="result-section">
+        <div class="section-title-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <h4>Ad Copy</h4>
+        </div>
+        <div class="adcopy-grid">
+          <div class="adcopy-col">
+            <span class="adcopy-label">Headlines</span>
+            @for (h of plan.adCopy.headlines; track h) {
+              <div class="adcopy-row headline">{{ h }}</div>
+            }
+          </div>
+          <div class="adcopy-col">
+            <span class="adcopy-label">Descriptions</span>
+            @for (d of plan.adCopy.descriptions; track d) {
+              <div class="adcopy-row description">{{ d }}</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Tips -->
+      @if (plan.tips.length > 0) {
+        <div class="result-section tips-section">
+          <div class="section-title-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="18" height="18"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <h4>Pro Tips</h4>
+          </div>
+          @for (tip of plan.tips; track tip) {
+            <div class="tip-row">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14"><path d="M10 1l2.39 5.64L18 7.64l-4.5 4.09L14.78 18 10 14.77 5.22 18l1.28-6.27L2 7.64l5.61-1L10 1z"/></svg>
+              <span>{{ tip }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Footer -->
+      <div class="result-footer">
+        @if (aiCreated().size > 0) {
+          <button class="conf-btn primary" (click)="viewSummary()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+            View Summary ({{ aiCreated().size }} created)
+          </button>
+        }
+        <button class="reset-btn" (click)="reset()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+          Start Over
+        </button>
+      </div>
+    </div>
+  }
+</div>

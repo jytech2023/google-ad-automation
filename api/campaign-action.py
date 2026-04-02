@@ -97,8 +97,8 @@ class handler(BaseHTTPRequestHandler):
         campaign_name = data.get("campaignName", "").strip()
         action = data.get("action", "").strip()  # "pause" or "enable"
 
-        if not campaign_name or action not in ("pause", "enable"):
-            self._respond(400, {"error": "campaignName and action (pause|enable) are required"})
+        if not campaign_name or action not in ("pause",):
+            self._respond(400, {"error": "campaignName and action (pause) are required. Enabling campaigns is not allowed from this platform."})
             return
 
         customer_id = os.environ.get("GOOGLE_ADS_CUSTOMER_ID", "")
@@ -112,17 +112,6 @@ class handler(BaseHTTPRequestHandler):
         if not access_token:
             self._respond(401, {"error": "Failed to get OAuth token"})
             return
-
-        # Block enabling campaigns if no billing is set up
-        if action == "enable":
-            has_billing = self._check_billing(access_token, customer_id, login_customer_id)
-            if not has_billing:
-                self._respond(403, {
-                    "error": "Cannot enable campaign: no billing setup found. Add a payment method in Google Ads first.",
-                })
-                return
-
-        # Continue with campaign action
 
         resource_name = find_campaign_resource(access_token, customer_id, campaign_name, login_customer_id)
         if not resource_name:

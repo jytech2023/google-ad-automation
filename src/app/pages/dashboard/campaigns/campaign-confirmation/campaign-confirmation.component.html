@@ -1,0 +1,118 @@
+<div class="confirmation">
+  <!-- Success Header -->
+  <div class="conf-header">
+    <div class="conf-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="28" height="28"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h3>{{ campaigns().length === 1 ? 'Campaign Created!' : campaigns().length + ' Campaigns Created!' }}</h3>
+    <p class="conf-subtitle">Your campaigns with ad groups, ads, and keywords are now in <strong>review mode</strong>. Google will review them before they can go live.</p>
+  </div>
+
+  <!-- Review Timeline -->
+  <div class="review-timeline">
+    <div class="timeline-step done">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <span class="timeline-label">Created</span>
+        <span class="timeline-desc">Campaign submitted to Google Ads</span>
+      </div>
+    </div>
+    <div class="timeline-line"></div>
+    <div class="timeline-step active">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <span class="timeline-label">In Review</span>
+        <span class="timeline-desc">Google is reviewing your ad content (typically 1 business day)</span>
+      </div>
+    </div>
+    <div class="timeline-line"></div>
+    <div class="timeline-step">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <span class="timeline-label">Ready to Enable</span>
+        <span class="timeline-desc">Once approved, enable the campaign in Google Ads to start running</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Campaign Details -->
+  <div class="conf-campaigns">
+    @for (c of campaigns(); track c.resourceName) {
+      <div class="conf-campaign-card">
+        <div class="conf-card-top">
+          <span class="conf-campaign-name">{{ c.campaignName }}</span>
+          <span class="conf-status">{{ c.status }}</span>
+        </div>
+        <div class="conf-card-details">
+          <div class="conf-detail">
+            <span class="conf-detail-label">Channel</span>
+            <span class="conf-detail-value">{{ c.channel }}</span>
+          </div>
+          <div class="conf-detail">
+            <span class="conf-detail-label">Daily Budget</span>
+            <span class="conf-detail-value">{{ c.dailyBudget | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="conf-detail">
+            <span class="conf-detail-label">Campaign ID</span>
+            <span class="conf-detail-value mono">{{ c.resourceName.split('/').pop() }}</span>
+          </div>
+        </div>
+        @if (c.created) {
+          <div class="conf-created-items">
+            <span class="created-item" [class.ok]="c.created.campaign">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 5 7 11 4 8"/></svg>
+              Campaign
+            </span>
+            <span class="created-item" [class.ok]="c.created.adGroup">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 5 7 11 4 8"/></svg>
+              Ad Group
+            </span>
+            <span class="created-item" [class.ok]="c.created.ad">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 5 7 11 4 8"/></svg>
+              Responsive Search Ad
+            </span>
+            <span class="created-item" [class.ok]="c.created.keywords > 0">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="12 5 7 11 4 8"/></svg>
+              {{ c.created.keywords || 0 }} Keywords
+            </span>
+          </div>
+        }
+        @if (c.errors && c.errors.length > 0) {
+          <div class="conf-warnings">
+            @for (err of c.errors; track err.step) {
+              <span class="conf-warning">{{ err.step }} could not be created — add manually in Google Ads</span>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Next Steps -->
+  <div class="conf-next">
+    <h4>Next Steps</h4>
+    <div class="next-items">
+      <div class="next-item">
+        <span class="next-num">1</span>
+        <span>Review the auto-generated ads and keywords in Google Ads</span>
+      </div>
+      <div class="next-item">
+        <span class="next-num">2</span>
+        <span>Set up billing/payment method in your Google Ads account</span>
+      </div>
+      <div class="next-item">
+        <span class="next-num">3</span>
+        <span>Enable the campaign in Google Ads once approved by Google's review</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="conf-actions">
+    <a class="conf-btn primary" [href]="googleAdsUrl()" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Open Google Ads
+    </a>
+    <button class="conf-btn secondary" (click)="dismiss.emit()">Back to Campaigns</button>
+  </div>
+</div>

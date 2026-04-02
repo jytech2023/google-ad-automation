@@ -4,11 +4,13 @@ import { DecimalPipe, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../../i18n/translate.pipe';
 import { AdsDataService, Campaign } from '../ads-data.service';
+import { AiWidgetComponent } from './ai-widget/ai-widget.component';
+import { CampaignConfirmationComponent, CreatedCampaign } from './campaign-confirmation/campaign-confirmation.component';
 
 @Component({
   selector: 'app-campaigns',
   standalone: true,
-  imports: [DecimalPipe, CurrencyPipe, TranslatePipe, FormsModule],
+  imports: [DecimalPipe, CurrencyPipe, TranslatePipe, FormsModule, AiWidgetComponent, CampaignConfirmationComponent],
   templateUrl: './campaigns.component.html',
   styleUrl: './campaigns.component.scss',
 })
@@ -18,24 +20,13 @@ export class CampaignsComponent {
 
   filter = signal<'all' | 'active' | 'paused' | 'ended'>('all');
   selectedCampaign = signal<Campaign | null>(null);
-  actionLoading = signal<string | null>(null);
-  actionResult = signal<{ name: string; success: boolean; message: string } | null>(null);
 
   showCreateForm = signal(false);
   createLoading = signal(false);
-  hasBilling = signal<boolean | null>(null);
+  createError = signal('');
   newCampaign = { name: '', dailyBudget: 10, channel: 'SEARCH' };
-
-  constructor() {
-    this.checkBilling();
-  }
-
-  private checkBilling(): void {
-    this.http.get<{ hasBilling: boolean }>('/api/billing-status').subscribe({
-      next: (res) => this.hasBilling.set(res.hasBilling),
-      error: () => this.hasBilling.set(false),
-    });
-  }
+  showAiWidget = signal(false);
+  createdCampaigns = signal<CreatedCampaign[]>([]);
 
   get filteredCampaigns(): Campaign[] {
     const f = this.filter();
@@ -55,58 +46,43 @@ export class CampaignsComponent {
     return this.ads.campaigns().filter(c => c.status === status).length;
   }
 
-  pauseCampaign(c: Campaign, event: Event): void {
-    event.stopPropagation();
-    this.performAction(c, 'pause');
-  }
-
-  enableCampaign(c: Campaign, event: Event): void {
-    event.stopPropagation();
-    this.performAction(c, 'enable');
-  }
-
   createCampaign(): void {
     if (!this.newCampaign.name || this.newCampaign.dailyBudget <= 0) return;
     this.createLoading.set(true);
+    this.createError.set('');
 
-    this.http.post<{ success: boolean; error?: string }>('/api/campaign-create', { ...this.newCampaign, status: 'PAUSED' }).subscribe({
+    const payload = { ...this.newCampaign, status: 'PAUSED' };
+    this.http.post<{ success: boolean; campaignName: string; resourceName: string; status: string; dailyBudget: number; error?: string }>('/api/campaign-create', payload).subscribe({
       next: (res) => {
         this.createLoading.set(false);
         if (res.success) {
           this.showCreateForm.set(false);
+          this.createdCampaigns.set([{
+            campaignName: res.campaignName,
+            resourceName: res.resourceName,
+            status: res.status,
+            dailyBudget: res.dailyBudget,
+            channel: payload.channel,
+            createdAt: new Date().toISOString(),
+          }]);
           this.newCampaign = { name: '', dailyBudget: 10, channel: 'SEARCH' };
           this.ads.refresh();
         }
       },
       error: (err) => {
         this.createLoading.set(false);
-        this.actionResult.set({ name: 'create', success: false, message: err.error?.error ?? 'Failed to create campaign' });
+        this.createError.set(err.error?.error ?? 'Failed to create campaign');
       },
     });
   }
 
-  private performAction(c: Campaign, action: 'pause' | 'enable'): void {
-    this.actionLoading.set(c.name);
-    this.actionResult.set(null);
+  onAiCampaignCreated(campaigns: CreatedCampaign[]): void {
+    this.createdCampaigns.set(campaigns);
+    this.showAiWidget.set(false);
+    this.ads.refresh();
+  }
 
-    this.http.post<{ success: boolean; error?: string }>('/api/campaign-action', {
-      campaignName: c.name,
-      action,
-    }).subscribe({
-      next: (res) => {
-        this.actionLoading.set(null);
-        if (res.success) {
-          this.actionResult.set({ name: c.name, success: true, message: `Campaign ${action}d successfully` });
-          this.ads.refresh();
-        } else {
-          this.actionResult.set({ name: c.name, success: false, message: res.error ?? 'Action failed' });
-        }
-      },
-      error: (err) => {
-        this.actionLoading.set(null);
-        const msg = err.error?.error ?? 'Network error';
-        this.actionResult.set({ name: c.name, success: false, message: msg });
-      },
-    });
+  dismissConfirmation(): void {
+    this.createdCampaigns.set([]);
   }
 }
