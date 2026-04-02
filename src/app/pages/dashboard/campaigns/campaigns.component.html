@@ -1,0 +1,136 @@
+<div class="campaigns-header">
+  <h2 class="page-title">{{ 'dash.campaigns' | translate }}</h2>
+  <button class="btn-sm primary" (click)="showCreateForm.set(!showCreateForm())">
+    {{ showCreateForm() ? 'Cancel' : '+ New Campaign' }}
+  </button>
+</div>
+
+@if (showCreateForm()) {
+  <div class="create-form card">
+    <h3>Create New Campaign</h3>
+    <div class="create-grid">
+      <div class="form-group">
+        <label>Campaign Name</label>
+        <input type="text" [(ngModel)]="newCampaign.name" placeholder="e.g. Summer Sale 2026" />
+      </div>
+      <div class="form-group">
+        <label>Daily Budget (USD)</label>
+        <input type="number" [(ngModel)]="newCampaign.dailyBudget" min="1" />
+      </div>
+      <div class="form-group">
+        <label>Channel</label>
+        <select [(ngModel)]="newCampaign.channel">
+          <option value="SEARCH">Search</option>
+          <option value="DISPLAY">Display</option>
+          <option value="SHOPPING">Shopping</option>
+          <option value="VIDEO">Video</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Initial Status</label>
+        <select [(ngModel)]="newCampaign.status">
+          <option value="PAUSED">Paused (safe)</option>
+          <option value="ENABLED">Enabled (live)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-sm primary" (click)="createCampaign()" [disabled]="createLoading() || !newCampaign.name">
+      {{ createLoading() ? 'Creating...' : 'Create Campaign' }}
+    </button>
+    @if (actionResult()?.name === 'create' && !actionResult()?.success) {
+      <div class="action-result error">{{ actionResult()?.message }}</div>
+    }
+  </div>
+}
+
+<div class="campaigns-header">
+  <div class="filter-tabs">
+    <button [class.active]="filter() === 'all'" (click)="setFilter('all')">All ({{ ads.campaigns().length }})</button>
+    <button [class.active]="filter() === 'active'" (click)="setFilter('active')">{{ 'dash.active' | translate }} ({{ countByStatus('active') }})</button>
+    <button [class.active]="filter() === 'paused'" (click)="setFilter('paused')">{{ 'dash.paused' | translate }} ({{ countByStatus('paused') }})</button>
+    <button [class.active]="filter() === 'ended'" (click)="setFilter('ended')">{{ 'dash.ended' | translate }} ({{ countByStatus('ended') }})</button>
+  </div>
+</div>
+
+<div class="campaigns-list">
+  @for (c of filteredCampaigns; track c.name) {
+    <div class="campaign-card" [class.selected]="selectedCampaign()?.name === c.name">
+      <div class="campaign-card-header">
+        <div class="campaign-card-info">
+          <h3>{{ c.name }}</h3>
+          <span class="status-badge" [attr.data-status]="c.status">{{ ('dash.' + c.status) | translate }}</span>
+          <span class="channel-badge">{{ c.channel }}</span>
+        </div>
+        <button class="expand-btn" (click)="selectCampaign(c)">
+          <svg class="expand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <div class="campaign-card-metrics">
+        <div class="metric">
+          <span class="metric-label">{{ 'dash.impressions' | translate }}</span>
+          <span class="metric-value">{{ c.impressions | number }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">{{ 'dash.clicks' | translate }}</span>
+          <span class="metric-value">{{ c.clicks | number }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">{{ 'dash.ctr' | translate }}</span>
+          <span class="metric-value">{{ c.ctr }}%</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">{{ 'dash.cost' | translate }}</span>
+          <span class="metric-value">{{ c.cost | currency:'USD':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">{{ 'dash.conv' | translate }}</span>
+          <span class="metric-value">{{ c.conversions }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">{{ 'dash.roas' | translate }}</span>
+          <span class="metric-value">
+            <span class="roas-badge" [class.good]="c.roas >= 4" [class.ok]="c.roas >= 2 && c.roas < 4" [class.low]="c.roas < 2">{{ c.roas }}x</span>
+          </span>
+        </div>
+      </div>
+
+      @if (selectedCampaign()?.name === c.name) {
+        <div class="campaign-detail">
+          <div class="detail-actions">
+            @if (c.status === 'active') {
+              <button class="btn-sm danger" (click)="pauseCampaign(c, $event)" [disabled]="!c.mutable || actionLoading() === c.name">
+                {{ actionLoading() === c.name ? 'Pausing...' : 'Pause Campaign' }}
+              </button>
+            } @else if (c.status === 'paused') {
+              <button class="btn-sm primary" (click)="enableCampaign(c, $event)" [disabled]="!c.mutable || actionLoading() === c.name">
+                {{ actionLoading() === c.name ? 'Enabling...' : 'Enable Campaign' }}
+              </button>
+            }
+            <button class="btn-sm secondary">View Ad Groups</button>
+            <button class="btn-sm secondary">View Ads</button>
+          </div>
+          @if (!c.mutable) {
+            <div class="action-hint">
+              @if (c.status === 'ended') {
+                Removed campaigns cannot be modified.
+              } @else {
+                {{ c.channel }} campaigns cannot be paused/enabled via API. Manage this campaign directly in Google Ads.
+              }
+            </div>
+          }
+          @if (actionResult()?.name === c.name) {
+            <div class="action-result" [class.success]="actionResult()?.success" [class.error]="!actionResult()?.success">
+              {{ actionResult()?.message }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  @if (filteredCampaigns.length === 0) {
+    <div class="empty-state">
+      <p>No campaigns found with this filter.</p>
+    </div>
+  }
+</div>

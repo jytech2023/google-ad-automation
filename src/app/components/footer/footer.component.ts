@@ -12,8 +12,8 @@ import { I18nService } from '../../i18n/i18n.service';
         <div class="footer-grid">
           <div class="footer-brand">
             <div class="logo">
-              <span class="logo-icon">&#9830;</span>
-              <span>GlobalTrade<span class="accent">Pro</span></span>
+              <svg class="logo-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="4" width="24" height="20" rx="4" stroke="currentColor" stroke-width="2"/><polyline points="8,18 12,12 16,15 22,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="8" r="2" fill="currentColor"/></svg>
+              <span>AdFlow<span class="accent">Pro</span></span>
             </div>
             <p>{{ 'footer.desc' | translate }}</p>
           </div>
@@ -50,7 +50,7 @@ import { I18nService } from '../../i18n/i18n.service';
   `,
   styles: [`
     .footer {
-      background: var(--bg-dark); color: #d1d5db; padding: 64px 0 0;
+      background: linear-gradient(160deg, #0f172a, #1e1b4b); color: #94a3b8; padding: 64px 0 0;
     }
     .footer-grid {
       display: grid;
@@ -61,8 +61,8 @@ import { I18nService } from '../../i18n/i18n.service';
       .logo {
         display: flex; align-items: center; gap: 8px;
         font-weight: 800; font-size: 1.25rem; color: white; margin-bottom: 16px;
-        .logo-icon { color: var(--accent); }
-        .accent { color: var(--accent); }
+        .logo-icon { color: #a5b4fc; }
+        .accent { color: #06b6d4; }
       }
       p { font-size: 0.95rem; line-height: 1.7; }
     }
@@ -74,7 +74,7 @@ import { I18nService } from '../../i18n/i18n.service';
       }
     }
     .footer-bottom {
-      border-top: 1px solid #374151; margin-top: 48px; padding: 24px 0;
+      border-top: 1px solid rgba(99, 102, 241, 0.15); margin-top: 48px; padding: 24px 0;
       text-align: center; font-size: 0.85rem;
     }
     @media (max-width: 768px) {

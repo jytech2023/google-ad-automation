@@ -1,59 +1,70 @@
-# GoogleAdTrading
+# AdFlow Pro - Marketing Automation Platform
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.9.
+A modern marketing automation platform built with Angular 19, designed to help businesses automate ad campaigns, optimize conversions, and scale their digital marketing efforts.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Google Ads Management** — End-to-end campaign management with keyword research, bid optimization, and performance tracking
+- **Multi-Channel Advertising** — Unified management across Google, Meta, LinkedIn, and more
+- **Conversion Tracking** — Advanced attribution modeling to measure every touchpoint in the customer journey
+- **Marketing Consulting** — Expert guidance on ad strategy, budget allocation, and audience targeting
+- **Budget Optimization** — AI-driven budget allocation and ROAS optimization
+- **Analytics Dashboard** — Real-time reporting with custom dashboards and actionable insights
+- **Internationalization** — Full i18n support (English, Chinese, Spanish) with URL-based language switching
+- **Google Ads Integration** — Built-in gtag.js tracking and conversion event reporting
+- **Responsive Design** — Mobile-friendly UI across all devices
+
+## Tech Stack
+
+- **Framework**: Angular 19 (standalone components)
+- **Styling**: SCSS with CSS custom properties
+- **Deployment**: Vercel (with serverless functions)
+- **Analytics**: Vercel Analytics + Speed Insights
+- **API**: Python serverless functions (contact form, health check)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- Angular CLI (`npm install -g @angular/cli`)
+
+### Development
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open [http://localhost:4200](http://localhost:4200) in your browser.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Build
 
 ```bash
-ng generate component component-name
+npm run build
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Build artifacts are stored in the `dist/` directory.
 
-```bash
-ng generate --help
+### Deployment
+
+The project is configured for Vercel deployment. Push to the main branch to trigger automatic deployment.
+
+## Project Structure
+
+```text
+src/
+├── app/
+│   ├── components/       # Shared components (header, footer)
+│   ├── pages/            # Page components (home)
+│   ├── i18n/             # Internationalization (translations, service, pipe)
+│   ├── services/         # Google Ads gtag service
+│   └── environments/     # Environment configs
+api/
+├── contact.py            # Contact form serverless function
+└── health.py             # Health check endpoint
 ```
 
-## Building
+## License
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Private - All rights reserved.

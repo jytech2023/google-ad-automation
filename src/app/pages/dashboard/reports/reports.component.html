@@ -1,0 +1,104 @@
+<h2 class="page-title">{{ 'dash.reports' | translate }}</h2>
+
+<!-- Summary Cards -->
+<div class="summary-grid">
+  <div class="summary-card">
+    <span class="summary-label">Total {{ 'dash.impressions' | translate }}</span>
+    <span class="summary-value">{{ totalImpressions() | number }}</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-label">Total {{ 'dash.clicks' | translate }}</span>
+    <span class="summary-value">{{ totalClicks() | number }}</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-label">Total {{ 'dash.cost' | translate }}</span>
+    <span class="summary-value">{{ totalCost() | currency:'USD':'symbol':'1.0-0' }}</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-label">Total {{ 'dash.conv' | translate }}</span>
+    <span class="summary-value">{{ totalConversions() | number }}</span>
+  </div>
+  <div class="summary-card">
+    <span class="summary-label">Avg CPC</span>
+    <span class="summary-value">{{ avgCpc() | currency:'USD':'symbol':'1.2-2' }}</span>
+  </div>
+</div>
+
+<!-- Cost Chart -->
+<div class="charts-row">
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3>Daily {{ 'dash.cost' | translate }}</h3>
+      <span class="chart-badge">{{ 'dash.last7days' | translate }}</span>
+    </div>
+    <div class="bar-chart">
+      @for (day of ads.dailyMetrics(); track day.date) {
+        <div class="bar-col">
+          <div class="bar cost-bar" [style.height]="barHeight(day.cost, maxCost())">
+            <span class="bar-tooltip">{{ day.cost | currency:'USD':'symbol':'1.0-0' }}</span>
+          </div>
+          <span class="bar-label">{{ day.date }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-header">
+      <h3>Daily {{ 'dash.clicks' | translate }}</h3>
+      <span class="chart-badge">{{ 'dash.last7days' | translate }}</span>
+    </div>
+    <div class="bar-chart">
+      @for (day of ads.dailyMetrics(); track day.date) {
+        <div class="bar-col">
+          <div class="bar clicks-bar" [style.height]="barHeight(day.clicks, maxClicks())">
+            <span class="bar-tooltip">{{ day.clicks | number }}</span>
+          </div>
+          <span class="bar-label">{{ day.date }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Campaign Breakdown -->
+<div class="table-card">
+  <div class="table-header">
+    <h3>Campaign Breakdown</h3>
+    <button class="btn-sm secondary">Export CSV</button>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>{{ 'dash.campaign' | translate }}</th>
+          <th>{{ 'dash.status' | translate }}</th>
+          <th>{{ 'dash.impressions' | translate }}</th>
+          <th>{{ 'dash.clicks' | translate }}</th>
+          <th>{{ 'dash.ctr' | translate }}</th>
+          <th>{{ 'dash.cost' | translate }}</th>
+          <th>{{ 'dash.conv' | translate }}</th>
+          <th>{{ 'dash.roas' | translate }}</th>
+          <th>Cost/Conv</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of ads.campaigns(); track c.name) {
+          <tr>
+            <td class="campaign-name">{{ c.name }}</td>
+            <td><span class="status-badge" [attr.data-status]="c.status">{{ ('dash.' + c.status) | translate }}</span></td>
+            <td>{{ c.impressions | number }}</td>
+            <td>{{ c.clicks | number }}</td>
+            <td>{{ c.ctr }}%</td>
+            <td>{{ c.cost | currency:'USD':'symbol':'1.0-0' }}</td>
+            <td>{{ c.conversions }}</td>
+            <td>
+              <span class="roas-badge" [class.good]="c.roas >= 4" [class.ok]="c.roas >= 2 && c.roas < 4" [class.low]="c.roas < 2">{{ c.roas }}x</span>
+            </td>
+            <td>{{ c.conversions > 0 ? (c.cost / c.conversions | currency:'USD':'symbol':'1.0-0') : '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -40,11 +40,14 @@ export class GtagService {
     const { conversionId, conversionLabel } = environment.googleAds;
     if (!window.gtag || !conversionId || conversionId === 'AW-XXXXXXXXX') return;
 
-    window.gtag('event', 'conversion', {
-      send_to: `${conversionId}/${conversionLabel}`,
-      value,
-      currency,
-    });
+    const params: Record<string, unknown> = { value, currency };
+    if (conversionLabel && conversionLabel !== 'YOUR_CONVERSION_LABEL') {
+      params['send_to'] = `${conversionId}/${conversionLabel}`;
+    } else {
+      params['send_to'] = conversionId;
+    }
+
+    window.gtag('event', 'conversion', params);
   }
 
   /** Track a custom event */

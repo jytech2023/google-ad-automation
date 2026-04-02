@@ -1,0 +1,38 @@
+@use '../dashboard-shared';
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.summary-card {
+  background: #111827;
+  border: 1px solid rgba(99, 102, 241, 0.08);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.summary-label {
+  display: block;
+  font-size: 0.78rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.summary-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: white;
+}
+
+.cost-bar { background: linear-gradient(to top, #f59e0b, #fbbf24) !important; }
+.clicks-bar { background: linear-gradient(to top, #6366f1, #818cf8) !important; }
+
+@media (max-width: 1024px) { .summary-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .summary-grid { grid-template-columns: 1fr; } }

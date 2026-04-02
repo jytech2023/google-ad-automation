@@ -1,0 +1,131 @@
+<h2 class="page-title">{{ 'dash.settings' | translate }}</h2>
+
+<div class="settings-grid">
+  <!-- Account Settings -->
+  <div class="card">
+    <h3 class="card-title">Account Settings</h3>
+
+    <div class="form-group">
+      <label>Company Name</label>
+      <input type="text" [(ngModel)]="settings.companyName" />
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" [(ngModel)]="settings.email" placeholder="your@email.com" />
+    </div>
+
+    <div class="form-group">
+      <label>Google Ads Customer ID</label>
+      <input type="text" [(ngModel)]="settings.customerId" />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Timezone</label>
+        <select [(ngModel)]="settings.timezone">
+          <option value="America/Los_Angeles">Pacific Time (US)</option>
+          <option value="America/Chicago">Central Time (US)</option>
+          <option value="America/New_York">Eastern Time (US)</option>
+          <option value="Asia/Shanghai">China Standard Time</option>
+          <option value="Europe/Madrid">Central European Time</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Currency</label>
+        <select [(ngModel)]="settings.currency">
+          <option value="USD">USD ($)</option>
+          <option value="CNY">CNY (¥)</option>
+          <option value="EUR">EUR (€)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Connection -->
+  <div class="card">
+    <h3 class="card-title">API Connection</h3>
+
+    <div class="api-status">
+      <div class="status-indicator" [class.connected]="apiStatus() === 'connected'" [class.demo]="apiStatus() === 'demo'">
+        <span class="status-dot"></span>
+        {{ apiStatus() === 'connected' ? 'Connected to Google Ads API' : 'Using Demo Data' }}
+      </div>
+      <button class="btn-sm secondary" (click)="testConnection()">Test Connection</button>
+    </div>
+
+    <div class="api-info">
+      <div class="info-row">
+        <span class="info-label">Developer Token</span>
+        <span class="info-value">••••••••••••</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Customer ID</span>
+        <span class="info-value">{{ settings.customerId }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">OAuth Status</span>
+        <span class="info-value" [class.success]="apiStatus() === 'connected'">
+          {{ apiStatus() === 'connected' ? 'Authenticated' : 'Not configured' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  <div class="card">
+    <h3 class="card-title">Notifications</h3>
+
+    <div class="toggle-row">
+      <div>
+        <span class="toggle-label">Email Notifications</span>
+        <span class="toggle-desc">Receive alerts for campaign issues</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="settings.notifications" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <span class="toggle-label">Weekly Report</span>
+        <span class="toggle-desc">Get a weekly performance summary email</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="settings.weeklyReport" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <span class="toggle-label">Budget Alerts</span>
+        <span class="toggle-desc">Alert when campaign budget exceeds 80%</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" [(ngModel)]="settings.budgetAlerts" />
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Language -->
+  <div class="card">
+    <h3 class="card-title">Language</h3>
+    <div class="lang-options">
+      @for (lang of i18n.supportedLanguages; track lang.code) {
+        <button class="lang-option" [class.active]="lang.code === i18n.lang()" (click)="i18n.setLanguage(lang.code)">
+          <span class="lang-flag">{{ lang.flag }}</span>
+          <span>{{ lang.label }}</span>
+        </button>
+      }
+    </div>
+  </div>
+</div>
+
+<div class="save-bar">
+  <button class="btn-sm primary save-btn" (click)="save()">
+    {{ saved() ? 'Saved!' : 'Save Settings' }}
+  </button>
+</div>

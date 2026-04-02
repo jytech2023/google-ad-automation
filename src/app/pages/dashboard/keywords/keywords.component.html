@@ -1,0 +1,49 @@
+<h2 class="page-title">{{ 'dash.keywords' | translate }}</h2>
+
+<div class="search-bar">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <input type="text" placeholder="Search keywords or campaigns..." (input)="searchQuery.set($any($event.target).value)" />
+</div>
+
+<div class="table-card">
+  <div class="table-header">
+    <h3>Keyword Performance</h3>
+    <span class="chart-badge">{{ filteredKeywords.length }} keywords</span>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Keyword</th>
+          <th>{{ 'dash.campaign' | translate }}</th>
+          <th>Match</th>
+          <th>{{ 'dash.impressions' | translate }}</th>
+          <th>{{ 'dash.clicks' | translate }}</th>
+          <th>{{ 'dash.ctr' | translate }}</th>
+          <th>CPC</th>
+          <th>{{ 'dash.conv' | translate }}</th>
+          <th>QS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (k of filteredKeywords; track k.keyword) {
+          <tr>
+            <td class="campaign-name">{{ k.keyword }}</td>
+            <td>{{ k.campaign }}</td>
+            <td><span class="match-badge" [attr.data-match]="k.matchType">{{ k.matchType }}</span></td>
+            <td>{{ k.impressions | number }}</td>
+            <td>{{ k.clicks | number }}</td>
+            <td>{{ k.ctr }}%</td>
+            <td>{{ k.cpc | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td>{{ k.conversions }}</td>
+            <td>
+              <span class="qs-badge" [class.good]="k.qualityScore >= 7" [class.ok]="k.qualityScore >= 4 && k.qualityScore < 7" [class.low]="k.qualityScore < 4">
+                {{ k.qualityScore }}/10
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

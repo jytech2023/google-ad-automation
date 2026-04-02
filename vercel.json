@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "framework": "angular",
-  "buildCommand": "ng build --configuration production",
+  "framework": null,
+  "devCommand": "",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist/google-ad-automation/browser",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },

@@ -1,0 +1,77 @@
+<div class="dashboard">
+  <aside class="sidebar">
+    <a routerLink="/" class="sidebar-logo">
+      <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect x="2" y="4" width="24" height="20" rx="4" stroke="currentColor" stroke-width="2"/><polyline points="8,18 12,12 16,15 22,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="22" cy="8" r="2" fill="currentColor"/></svg>
+      <span>AdFlow<span class="accent">Pro</span></span>
+    </a>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        {{ 'dash.overview' | translate }}
+      </a>
+      <a class="nav-item" routerLink="/dashboard/campaigns" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        {{ 'dash.campaigns' | translate }}
+      </a>
+      <a class="nav-item" routerLink="/dashboard/keywords" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        {{ 'dash.keywords' | translate }}
+      </a>
+      <a class="nav-item" routerLink="/dashboard/ad-copy" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        {{ 'dash.adCopyAi' | translate }}
+      </a>
+      <a class="nav-item" routerLink="/dashboard/reports" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        {{ 'dash.reports' | translate }}
+      </a>
+      <a class="nav-item" routerLink="/dashboard/settings" routerLinkActive="active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        {{ 'dash.settings' | translate }}
+      </a>
+    </nav>
+
+    <div class="sidebar-lang">
+      @for (lang of i18n.supportedLanguages; track lang.code) {
+        <button class="lang-btn" [class.active]="lang.code === i18n.lang()" (click)="i18n.setLanguage(lang.code)">{{ lang.flag }}</button>
+      }
+    </div>
+
+    <a routerLink="/" class="sidebar-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      {{ 'dash.backToSite' | translate }}
+    </a>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1>{{ 'dash.title' | translate }}</h1>
+        <p class="topbar-date">
+          {{ today | date:'MMMM d, yyyy' }}
+          @if (ads.dataSource() === 'error') {
+            <span class="data-source" data-source="error">API Error</span>
+          } @else {
+            <span class="data-source" [attr.data-source]="ads.dataSource()">
+              {{ (ads.dataSource() === 'google_ads_api' ? 'dash.liveData' : 'dash.demoData') | translate }}
+            </span>
+          }
+        </p>
+      </div>
+      <div class="topbar-actions">
+        <div class="date-range">
+          <button [class.active]="ads.dateRange() === '7d'" (click)="ads.setDateRange('7d')">{{ 'dash.days7' | translate }}</button>
+          <button [class.active]="ads.dateRange() === '14d'" (click)="ads.setDateRange('14d')">{{ 'dash.days14' | translate }}</button>
+          <button [class.active]="ads.dateRange() === '30d'" (click)="ads.setDateRange('30d')">{{ 'dash.days30' | translate }}</button>
+        </div>
+      </div>
+    </header>
+
+    @if (ads.loading()) {
+      <div class="loading-bar"></div>
+    }
+
+    <router-outlet />
+  </main>
+</div>
