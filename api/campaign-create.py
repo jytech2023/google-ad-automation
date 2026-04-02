@@ -68,8 +68,8 @@ class handler(BaseHTTPRequestHandler):
             self._respond(400, {"error": "name and dailyBudget (> 0) are required"})
             return
 
-        if status not in ("PAUSED", "ENABLED"):
-            status = "PAUSED"
+        # Always create as PAUSED — user must add billing before enabling
+        status = "PAUSED"
 
         customer_id = os.environ.get("GOOGLE_ADS_CUSTOMER_ID", "")
         login_customer_id = os.environ.get("GOOGLE_ADS_LOGIN_CUSTOMER_ID", "")

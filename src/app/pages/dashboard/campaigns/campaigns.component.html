@@ -5,9 +5,20 @@
   </button>
 </div>
 
+@if (hasBilling() === false) {
+  <div class="billing-warning">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div>
+      <strong>No billing setup detected.</strong>
+      Campaigns can be created in preview mode (paused) but cannot be enabled until a payment method is added in Google Ads.
+    </div>
+  </div>
+}
+
 @if (showCreateForm()) {
   <div class="create-form card">
-    <h3>Create New Campaign</h3>
+    <h3>Create New Campaign (Preview Mode)</h3>
+    <p class="create-note">Campaign will be created as <strong>Paused</strong>. Add billing in Google Ads to enable it.</p>
     <div class="create-grid">
       <div class="form-group">
         <label>Campaign Name</label>
@@ -26,16 +37,9 @@
           <option value="VIDEO">Video</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Initial Status</label>
-        <select [(ngModel)]="newCampaign.status">
-          <option value="PAUSED">Paused (safe)</option>
-          <option value="ENABLED">Enabled (live)</option>
-        </select>
-      </div>
     </div>
     <button class="btn-sm primary" (click)="createCampaign()" [disabled]="createLoading() || !newCampaign.name">
-      {{ createLoading() ? 'Creating...' : 'Create Campaign' }}
+      {{ createLoading() ? 'Creating...' : 'Create Campaign (Paused)' }}
     </button>
     @if (actionResult()?.name === 'create' && !actionResult()?.success) {
       <div class="action-result error">{{ actionResult()?.message }}</div>
@@ -102,9 +106,12 @@
                 {{ actionLoading() === c.name ? 'Pausing...' : 'Pause Campaign' }}
               </button>
             } @else if (c.status === 'paused') {
-              <button class="btn-sm primary" (click)="enableCampaign(c, $event)" [disabled]="!c.mutable || actionLoading() === c.name">
+              <button class="btn-sm primary" (click)="enableCampaign(c, $event)" [disabled]="!c.mutable || actionLoading() === c.name || hasBilling() === false">
                 {{ actionLoading() === c.name ? 'Enabling...' : 'Enable Campaign' }}
               </button>
+              @if (hasBilling() === false) {
+                <span class="billing-hint">Add billing to enable</span>
+              }
             }
             <button class="btn-sm secondary">View Ad Groups</button>
             <button class="btn-sm secondary">View Ads</button>

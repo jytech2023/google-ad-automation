@@ -113,6 +113,17 @@ class handler(BaseHTTPRequestHandler):
             self._respond(401, {"error": "Failed to get OAuth token"})
             return
 
+        # Block enabling campaigns if no billing is set up
+        if action == "enable":
+            has_billing = self._check_billing(access_token, customer_id, login_customer_id)
+            if not has_billing:
+                self._respond(403, {
+                    "error": "Cannot enable campaign: no billing setup found. Add a payment method in Google Ads first.",
+                })
+                return
+
+        # Continue with campaign action
+
         resource_name = find_campaign_resource(access_token, customer_id, campaign_name, login_customer_id)
         if not resource_name:
             self._respond(404, {"error": f"Campaign '{campaign_name}' not found"})
@@ -125,6 +136,30 @@ class handler(BaseHTTPRequestHandler):
             self._respond(200, {"success": True, "campaignName": campaign_name, "newStatus": action})
         else:
             self._respond(500, {"error": "Failed to update campaign", "details": result.get("error")})
+
+    def _check_billing(self, access_token: str, customer_id: str, login_customer_id: str) -> bool:
+        """Check if the account has an approved billing setup."""
+        url = f"https://googleads.googleapis.com/v20/customers/{customer_id}/googleAds:searchStream"
+        query = "SELECT billing_setup.id, billing_setup.status FROM billing_setup WHERE billing_setup.status = 'APPROVED' LIMIT 1"
+        payload = json.dumps({"query": query}).encode()
+
+        req = urllib.request.Request(url, data=payload, method="POST")
+        req.add_header("Authorization", f"Bearer {access_token}")
+        req.add_header("developer-token", os.environ.get("GOOGLE_ADS_DEVELOPER_TOKEN", ""))
+        req.add_header("Content-Type", "application/json")
+        if login_customer_id:
+            req.add_header("login-customer-id", login_customer_id)
+
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                result = json.loads(resp.read())
+                for batch in result:
+                    if batch.get("results"):
+                        return True
+            return False
+        except Exception as e:
+            print(f"[CampaignAction] Billing check error: {e}")
+            return False
 
     def _respond(self, status: int, data: dict):
         self.send_response(status)

@@ -34,6 +34,7 @@ def load_handler(module_name):
 AdsDataHandler = load_handler('ads-data')
 CampaignActionHandler = load_handler('campaign-action')
 CampaignCreateHandler = load_handler('campaign-create')
+BillingStatusHandler = load_handler('billing-status')
 ContactHandler = load_handler('contact')
 HealthHandler = load_handler('health')
 
@@ -42,6 +43,9 @@ class LocalHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/api/ads-data'):
             self.__class__ = AdsDataHandler
+            self.do_GET()
+        elif self.path.startswith('/api/billing-status'):
+            self.__class__ = BillingStatusHandler
             self.do_GET()
         elif self.path.startswith('/api/health'):
             self.__class__ = HealthHandler

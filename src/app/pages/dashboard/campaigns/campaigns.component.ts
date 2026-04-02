@@ -23,7 +23,19 @@ export class CampaignsComponent {
 
   showCreateForm = signal(false);
   createLoading = signal(false);
-  newCampaign = { name: '', dailyBudget: 10, status: 'PAUSED' as 'PAUSED' | 'ENABLED', channel: 'SEARCH' };
+  hasBilling = signal<boolean | null>(null);
+  newCampaign = { name: '', dailyBudget: 10, channel: 'SEARCH' };
+
+  constructor() {
+    this.checkBilling();
+  }
+
+  private checkBilling(): void {
+    this.http.get<{ hasBilling: boolean }>('/api/billing-status').subscribe({
+      next: (res) => this.hasBilling.set(res.hasBilling),
+      error: () => this.hasBilling.set(false),
+    });
+  }
 
   get filteredCampaigns(): Campaign[] {
     const f = this.filter();
@@ -57,12 +69,12 @@ export class CampaignsComponent {
     if (!this.newCampaign.name || this.newCampaign.dailyBudget <= 0) return;
     this.createLoading.set(true);
 
-    this.http.post<{ success: boolean; error?: string }>('/api/campaign-create', this.newCampaign).subscribe({
+    this.http.post<{ success: boolean; error?: string }>('/api/campaign-create', { ...this.newCampaign, status: 'PAUSED' }).subscribe({
       next: (res) => {
         this.createLoading.set(false);
         if (res.success) {
           this.showCreateForm.set(false);
-          this.newCampaign = { name: '', dailyBudget: 10, status: 'PAUSED', channel: 'SEARCH' };
+          this.newCampaign = { name: '', dailyBudget: 10, channel: 'SEARCH' };
           this.ads.refresh();
         }
       },
